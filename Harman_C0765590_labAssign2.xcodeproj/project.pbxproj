@@ -16,6 +16,8 @@
 		B577F2A223D522B400F97C22 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B577F2A023D522B400F97C22 /* LaunchScreen.storyboard */; };
 		B577F2AB23D523E700F97C22 /* TasksTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B577F2AA23D523E700F97C22 /* TasksTableViewController.swift */; };
 		B5B1424F23D5436D00AF6E9B /* AddTaskVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5B1424E23D5436D00AF6E9B /* AddTaskVC.swift */; };
+		B5B1426523D62AED00AF6E9B /* TaskModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5B1426423D62AED00AF6E9B /* TaskModel.swift */; };
+		B5B1426723D636C700AF6E9B /* TaskCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5B1426623D636C700AF6E9B /* TaskCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +32,8 @@
 		B577F2A323D522B400F97C22 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B577F2AA23D523E700F97C22 /* TasksTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TasksTableViewController.swift; sourceTree = "<group>"; };
 		B5B1424E23D5436D00AF6E9B /* AddTaskVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTaskVC.swift; sourceTree = "<group>"; };
+		B5B1426423D62AED00AF6E9B /* TaskModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskModel.swift; sourceTree = "<group>"; };
+		B5B1426623D636C700AF6E9B /* TaskCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,6 +66,7 @@
 		B577F29123D522B200F97C22 /* Harman_C0765590_labAssign2 */ = {
 			isa = PBXGroup;
 			children = (
+				B5B1426323D62AD100AF6E9B /* Models */,
 				B577F2A923D5235B00F97C22 /* Controllers */,
 				B577F29223D522B200F97C22 /* AppDelegate.swift */,
 				B577F29423D522B200F97C22 /* SceneDelegate.swift */,
@@ -80,8 +85,17 @@
 			children = (
 				B577F2AA23D523E700F97C22 /* TasksTableViewController.swift */,
 				B5B1424E23D5436D00AF6E9B /* AddTaskVC.swift */,
+				B5B1426623D636C700AF6E9B /* TaskCell.swift */,
 			);
 			path = Controllers;
+			sourceTree = "<group>";
+		};
+		B5B1426323D62AD100AF6E9B /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				B5B1426423D62AED00AF6E9B /* TaskModel.swift */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -159,8 +173,10 @@
 				B5B1424F23D5436D00AF6E9B /* AddTaskVC.swift in Sources */,
 				B577F2AB23D523E700F97C22 /* TasksTableViewController.swift in Sources */,
 				B577F29D23D522B200F97C22 /* Harman_C0765590_labAssign2.xcdatamodeld in Sources */,
+				B5B1426723D636C700AF6E9B /* TaskCell.swift in Sources */,
 				B577F29323D522B200F97C22 /* AppDelegate.swift in Sources */,
 				B577F29523D522B200F97C22 /* SceneDelegate.swift in Sources */,
+				B5B1426523D62AED00AF6E9B /* TaskModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
