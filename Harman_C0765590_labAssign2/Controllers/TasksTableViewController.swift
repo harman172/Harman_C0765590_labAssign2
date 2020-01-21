@@ -79,7 +79,6 @@ class TasksTableViewController: UITableViewController {
                             break
                         }
                     }
-                    
                     do{
                         try self.managedContext?.save()
                     } catch{
@@ -100,7 +99,48 @@ class TasksTableViewController: UITableViewController {
             print("Delete")
         })
         
-        return UISwipeActionsConfiguration(actions: [DeleteAction])
+        let addDayAction = UIContextualAction(style: .normal, title: "Add Day", handler: {(action, view, success) in
+            
+            let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Task")
+            do{
+                let results = try self.managedContext!.fetch(request)
+                if results.count > 0{
+                    for result in results as! [NSManagedObject]{
+                        
+                        if self.tasks![indexPath.row].title == result.value(forKey: "title") as! String{
+                            let days = result.value(forKey: "daysCompleted") as! Int
+                            result.setValue((days + 1), forKey: "daysCompleted")
+                            break
+                        }
+                    }
+                    do{
+                        try self.managedContext?.save()
+                    } catch{
+                        print(error)
+                    }
+                }
+            }catch{
+                print(error)
+            }
+//            self.okAlert(title: "One day added", message: "Success!")
+//            self.reloadData()
+            self.tasks![indexPath.row].daysCompleted += 1
+            self.tableView.reloadRows(at: [indexPath], with: .automatic)
+            
+        })
+        addDayAction.backgroundColor = .brown
+        
+        return UISwipeActionsConfiguration(actions: [DeleteAction, addDayAction])
+    }
+    
+    func okAlert(title: String, message: String){
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .cancel) { (okSuccess) in
+            self.tableView.reloadData()
+        }
+        
+        alertController.addAction(okAction)
+        self.present(alertController, animated: true, completion: nil)
     }
     
 //    override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
@@ -187,14 +227,14 @@ class TasksTableViewController: UITableViewController {
     }
 
     func loaddata(){
-            let appDelegate = UIApplication.shared.delegate as! AppDelegate
-            let context = appDelegate.persistentContainer.viewContext
-            let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Task")
-            request.returnsObjectsAsFaults = false
-                    
-            do{
-                let results = try context.fetch(request)
-                print("records TVC...\(results.count)")
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let context = appDelegate.persistentContainer.viewContext
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Task")
+        request.returnsObjectsAsFaults = false
+                
+        do{
+            let results = try context.fetch(request)
+            print("records TVC...\(results.count)")
                 
     //            var alreadyExists = false
     //            if results.count > 0{
@@ -214,11 +254,11 @@ class TasksTableViewController: UITableViewController {
     //            }
     //            print("after save...\(results.count)")
                 
-            }catch{
-                print("Loading error....\(error)")
-            }
-                
+        }catch{
+            print("Loading error....\(error)")
         }
+            
+    }
     func reloadData(){
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Task")
         
