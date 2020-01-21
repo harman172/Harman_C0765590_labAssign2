@@ -32,19 +32,23 @@ class TaskCell: UITableViewCell {
         
         lblTitle.text = task.value(forKey: "title") as! String
 
+        //get date
         let dateFormat = DateFormatter()
         dateFormat.dateFormat = "dd/MM/yyyy"
         let formattedDate = dateFormat.string(from: task.value(forKey: "date") as! Date)
         lblDate.text = formattedDate
 
+        //get time
         let timeFormat = DateFormatter()
         timeFormat.dateFormat = "HH:MM:SS"
         let formattedTime = timeFormat.string(from: task.value(forKey: "date") as! Date)
         lblTime.text = formattedTime
 
+        
         let completedDays = task.value(forKey: "daysCompleted") as! Int
         let requiredDays = task.value(forKey: "daysRequired") as! Int
         
+        //check if task completes
         if completedDays < requiredDays{
             lblCompleteDays.text = "\(completedDays)/\(requiredDays) days completed"
             lblCompleteDays.textColor = #colorLiteral(red: 0.6705882353, green: 0.3411764706, blue: 0.2470588235, alpha: 1)

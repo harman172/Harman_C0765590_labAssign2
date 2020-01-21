@@ -10,8 +10,6 @@ import UIKit
 import CoreData
 
 class TasksTableViewController: UITableViewController, UISearchResultsUpdating {
-
-//    var tasks: [TaskModel]?
     
     var tasksArray: [NSManagedObject]?
     var filteredArray = [NSManagedObject]()
@@ -25,26 +23,25 @@ class TasksTableViewController: UITableViewController, UISearchResultsUpdating {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        //to search tasks
         searchController.searchResultsUpdater = self
         self.navigationItem.searchController = searchController
         searchController.dimsBackgroundDuringPresentation = false
         
+        //bar button image to sort by name
         lblSort.image = UIImage(systemName: "a.square.fill")
         
+        //for core data
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         managedContext = appDelegate.persistentContainer.viewContext
         
         loadData()
         tableView.backgroundColor = .lightGray
-        print("count of array.....\(tasksArray?.count)")
+//        print("count of array.....\(tasksArray?.count)")
         
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
     }
     
+    //updates table view after search completes
     func updateSearchResults(for searchController: UISearchController) {
         if let searchText = searchController.searchBar.text{
             isSearching = true
@@ -55,14 +52,13 @@ class TasksTableViewController: UITableViewController, UISearchResultsUpdating {
                 isSearching = false
                 return
             }
+            
             let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Task")
 
             fetchRequest.predicate = NSPredicate(format: "title contains[c] %@", searchText.lowercased())
             
             do {
-                
                 let results = try managedContext!.fetch(fetchRequest)
-
                 if results is [NSManagedObject] {
                     tasksArray = results as! [NSManagedObject]
                     filteredArray = results as! [NSManagedObject]
@@ -71,7 +67,6 @@ class TasksTableViewController: UITableViewController, UISearchResultsUpdating {
             } catch {
                 print(error)
             }
-//            }
         }
         tableView.reloadData()
     }
@@ -96,11 +91,15 @@ class TasksTableViewController: UITableViewController, UISearchResultsUpdating {
 
         let cell = tableView.dequeueReusableCell(withIdentifier: "taskCell") as! TaskCell
         cell.setTask(task: tasksArray![indexPath.row])
+        
+        // when task completes
         if (tasksArray![indexPath.row].value(forKey: "daysCompleted") as! Int) == (tasksArray![indexPath.row].value(forKey: "daysRequired") as! Int){
             cell.accessoryType = .checkmark
             cell.tintColor = .white
             cell.backgroundColor = #colorLiteral(red: 0.6705882353, green: 0.3411764706, blue: 0.2470588235, alpha: 1)
-        } else{
+        }
+        // task is incomplete yet
+        else{
             cell.accessoryType = .none
             cell.backgroundColor = .lightGray
         }
@@ -108,12 +107,13 @@ class TasksTableViewController: UITableViewController, UISearchResultsUpdating {
 
     }
   
-    
-    
+    //for swipe actions
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         
+        //delete on swipe
         let DeleteAction = UIContextualAction(style: .destructive, title: "Delete", handler: { (action, view, success) in
             
+            //delete from core data
             let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Task")
             do{
                 let results = try self.managedContext!.fetch(request)
@@ -137,6 +137,7 @@ class TasksTableViewController: UITableViewController, UISearchResultsUpdating {
             }
 //            tableView.deleteRows(at: [indexPath], with: .fade)
 
+            //delete from searching array
             if self.isSearching{
                 print("is searching...")
                 self.filteredArray.remove(at: indexPath.row)
@@ -148,8 +149,10 @@ class TasksTableViewController: UITableViewController, UISearchResultsUpdating {
             tableView.reloadData()
         })
         
+        // to add a day on swipe
         let addDayAction = UIContextualAction(style: .normal, title: "Add Day", handler: {(action, view, success) in
             
+            //updates day in core data
             let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Task")
             do{
                 let results = try self.managedContext!.fetch(request)
@@ -175,6 +178,7 @@ class TasksTableViewController: UITableViewController, UISearchResultsUpdating {
             }catch{
                 print(error)
             }
+            
             if self.lblSort.image == UIImage(systemName: "calendar"){
                 self.sortByName()
             } else{
@@ -245,31 +249,6 @@ class TasksTableViewController: UITableViewController, UISearchResultsUpdating {
         }
     }
     
-    
-    override func viewWillAppear(_ animated: Bool) {
-        loadData()
-        print("array count....\(tasksArray?.count)")
-        tableView.reloadData()
-        lblSort.image = UIImage(systemName: "a.square.fill")
-
-    }
-
-    func loadData(){
-        tasksArray = []
-        
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Task")
-        
-        do {
-            let results = try managedContext!.fetch(fetchRequest)
-            if results is [NSManagedObject] {
-                tasksArray = results as! [NSManagedObject]
-            }
-        } catch {
-            print(error)
-        }
-    }
-    
-    
     @IBAction func btnSorting(_ sender: UIBarButtonItem) {
 
         if sender.image == UIImage(systemName: "a.square.fill"){
@@ -284,6 +263,27 @@ class TasksTableViewController: UITableViewController, UISearchResultsUpdating {
         tableView.reloadData()
     }
     
+    func loadData(){
+        tasksArray = []
+
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Task")
+
+        do {
+          let results = try managedContext!.fetch(fetchRequest)
+          if results is [NSManagedObject] {
+              tasksArray = results as! [NSManagedObject]
+          }
+        } catch {
+          print(error)
+        }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+       loadData()
+       tableView.reloadData()
+       lblSort.image = UIImage(systemName: "a.square.fill")
+
+   }
     func sortByName(){
         let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Task")
         do{

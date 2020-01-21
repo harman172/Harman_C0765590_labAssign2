@@ -24,13 +24,13 @@ class AddTaskVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // Do any additional setup after loading the view.
 
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         context = appDelegate.persistentContainer.viewContext
         
         self.navigationItem.backBarButtonItem?.tintColor = .white
-//            loadData()
-            // Do any additional setup after loading the view.
         
         if segue == "cellSegue"{
             txtTitle.isEnabled = false
@@ -54,6 +54,7 @@ class AddTaskVC: UIViewController {
     
     @IBAction func btnSave(_ sender: UIButton) {
         
+        //returns if any field is empty
         guard !txtTitle.text!.isEmpty && !txtDescp.text!.isEmpty && !txtDays.text!.isEmpty else {
             okAlert(title: "Empty fields", message: "None of the field can be empty")
             return
@@ -91,7 +92,6 @@ class AddTaskVC: UIViewController {
             else if alreadyExists && segue != "cellSegue"{
                 okAlert(title: "Duplicate entry!", message: "Task named \(txtTitle.text!) already exists.")
             }
-            print("after save...\(results.count)")
             
         }catch{
             print("Loading error....\(error)")
@@ -107,10 +107,6 @@ class AddTaskVC: UIViewController {
         txtDays.text = ""
         txtDescp.text = ""
     }
-//    override func viewWillDisappear(_ animated: Bool) {
-//        delegateTaskTVC?.tasks = self.tasks
-//
-//    }
     
     func addNewTask(){
         let newTask = NSEntityDescription.insertNewObject(forEntityName: "Task", into: context!)
@@ -121,7 +117,6 @@ class AddTaskVC: UIViewController {
         newTask.setValue(Date(), forKey: "date")
         saveData()
     }
-    
     
     func saveData(){
         do{
