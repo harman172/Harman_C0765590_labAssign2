@@ -69,31 +69,32 @@ class TasksTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let DeleteAction = UIContextualAction(style: .destructive, title: "Delete", handler: { (action, view, success) in
             
-//            let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Task")
-//            do{
-//                let results = try self.managedContext!.fetch(request)
-//                if results.count > 0{
-//                    for result in results as! [NSManagedObject]{
-//                        if self.tasks![indexPath.row].title == result.value(forKey: "title") as! String{
-//                            self.managedContext?.delete(result)
-//                            break
-//                        }
-//                    }
-//                    
-//                    do{
-//                        try self.managedContext?.save()
-//                    } catch{
-//                        print(error)
-//                    }
-//                    
-//                }
-////                self.reloadData()
-////                self.tableView.reloadData()
-//                
-//            }catch{
-//                print(error)
-//            }
+            let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Task")
+            do{
+                let results = try self.managedContext!.fetch(request)
+                if results.count > 0{
+                    for result in results as! [NSManagedObject]{
+                        if self.tasks![indexPath.row].title == result.value(forKey: "title") as! String{
+                            self.managedContext?.delete(result)
+                            break
+                        }
+                    }
+                    
+                    do{
+                        try self.managedContext?.save()
+                    } catch{
+                        print(error)
+                    }
+                    
+                }
+//                self.reloadData()
+//                self.tableView.reloadData()
+                
+            }catch{
+                print(error)
+            }
             
+            self.tasks!.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .fade)
 
             print("Delete")
