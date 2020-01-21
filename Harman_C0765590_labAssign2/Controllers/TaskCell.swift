@@ -46,9 +46,13 @@ class TaskCell: UITableViewCell {
         let requiredDays = task.value(forKey: "daysRequired") as! Int
         
         if completedDays < requiredDays{
-            lblCompleteDays.text = "\(completedDays)/\(requiredDays) completed"
+            lblCompleteDays.text = "\(completedDays)/\(requiredDays) days completed"
+            lblCompleteDays.textColor = #colorLiteral(red: 0.6705882353, green: 0.3411764706, blue: 0.2470588235, alpha: 1)
+            lblCompleteDays.font = lblCompleteDays.font.withSize(14)
         } else{
             lblCompleteDays.text = "Task completed"
+            lblCompleteDays.textColor = .white
+            lblCompleteDays.font = lblCompleteDays.font.withSize(20)
         }
     }
 

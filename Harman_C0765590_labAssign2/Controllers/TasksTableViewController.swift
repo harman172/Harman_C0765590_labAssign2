@@ -14,7 +14,9 @@ class TasksTableViewController: UITableViewController, UISearchResultsUpdating {
 //    var tasks: [TaskModel]?
     
     var tasksArray: [NSManagedObject]?
-
+    var filteredArray = [NSManagedObject]()
+    var isSearching = false
+    
     @IBOutlet weak var lblSort: UIBarButtonItem!
     var managedContext: NSManagedObjectContext?
     
@@ -30,10 +32,10 @@ class TasksTableViewController: UITableViewController, UISearchResultsUpdating {
         lblSort.image = UIImage(systemName: "a.square.fill")
         
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        // second step is context
         managedContext = appDelegate.persistentContainer.viewContext
         
         loadData()
+        tableView.backgroundColor = .lightGray
         print("count of array.....\(tasksArray?.count)")
         
         // Uncomment the following line to preserve selection between presentations
@@ -45,10 +47,12 @@ class TasksTableViewController: UITableViewController, UISearchResultsUpdating {
     
     func updateSearchResults(for searchController: UISearchController) {
         if let searchText = searchController.searchBar.text{
+            isSearching = true
             
             guard !searchText.isEmpty else {
                 loadData()
                 tableView.reloadData()
+                isSearching = false
                 return
             }
             let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Task")
@@ -61,6 +65,8 @@ class TasksTableViewController: UITableViewController, UISearchResultsUpdating {
 
                 if results is [NSManagedObject] {
                     tasksArray = results as! [NSManagedObject]
+                    filteredArray = results as! [NSManagedObject]
+//                    isSearching = false
                 }
             } catch {
                 print(error)
@@ -92,10 +98,11 @@ class TasksTableViewController: UITableViewController, UISearchResultsUpdating {
         cell.setTask(task: tasksArray![indexPath.row])
         if (tasksArray![indexPath.row].value(forKey: "daysCompleted") as! Int) == (tasksArray![indexPath.row].value(forKey: "daysRequired") as! Int){
             cell.accessoryType = .checkmark
-            cell.backgroundColor = .red
+            cell.tintColor = .white
+            cell.backgroundColor = #colorLiteral(red: 0.6705882353, green: 0.3411764706, blue: 0.2470588235, alpha: 1)
         } else{
             cell.accessoryType = .none
-            cell.backgroundColor = .none
+            cell.backgroundColor = .lightGray
         }
         return cell
 
@@ -128,9 +135,17 @@ class TasksTableViewController: UITableViewController, UISearchResultsUpdating {
             }catch{
                 print(error)
             }
-            self.loadData()
-            tableView.deleteRows(at: [indexPath], with: .fade)
+//            tableView.deleteRows(at: [indexPath], with: .fade)
 
+            if self.isSearching{
+                print("is searching...")
+                self.filteredArray.remove(at: indexPath.row)
+                self.tasksArray = self.filteredArray
+            } else{
+                print("not searchingggg.....")
+                self.loadData()
+            }
+            tableView.reloadData()
         })
         
         let addDayAction = UIContextualAction(style: .normal, title: "Add Day", handler: {(action, view, success) in
@@ -223,7 +238,6 @@ class TasksTableViewController: UITableViewController, UISearchResultsUpdating {
             
             if let tableCell = sender as? TaskCell{
                 if let index = tableView.indexPath(for: tableCell)?.row{
-//                    destination.setData(task: tasks![index])
                     destination.task = tasksArray![index]
                     
                 }
@@ -233,7 +247,6 @@ class TasksTableViewController: UITableViewController, UISearchResultsUpdating {
     
     
     override func viewWillAppear(_ animated: Bool) {
-//        reloadData()
         loadData()
         print("array count....\(tasksArray?.count)")
         tableView.reloadData()
@@ -303,5 +316,4 @@ class TasksTableViewController: UITableViewController, UISearchResultsUpdating {
             print(error)
         }
     }
-    
 }

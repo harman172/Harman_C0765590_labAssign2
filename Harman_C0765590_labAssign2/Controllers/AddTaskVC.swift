@@ -10,11 +10,10 @@ import UIKit
 import CoreData
 
 class AddTaskVC: UIViewController {
-
-//    var tasks: [TaskModel]?
     
     @IBOutlet weak var txtTitle: UITextField!
-    @IBOutlet weak var txtDescription: UITextField!
+    
+    @IBOutlet weak var txtDescp: UITextView!
     @IBOutlet weak var txtDays: UITextField!
     
     var context: NSManagedObjectContext?
@@ -29,22 +28,38 @@ class AddTaskVC: UIViewController {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         context = appDelegate.persistentContainer.viewContext
         
+        self.navigationItem.backBarButtonItem?.tintColor = .white
 //            loadData()
             // Do any additional setup after loading the view.
-
-        
         
         if segue == "cellSegue"{
+            txtTitle.isEnabled = false
             txtTitle.text = task?.value(forKey: "title") as! String
-            txtDescription.text = task?.value(forKey: "descp") as! String
+            txtDescp.text = task?.value(forKey: "descp") as! String
             txtDays.text = "\(task?.value(forKey: "daysRequired") as! Int)"
+            navigationItem.title = "Edit"
+            
         }
         
+        let tappedGesture = UITapGestureRecognizer(target: self, action: #selector(tapped))
+        view.addGestureRecognizer(tappedGesture)
         
     }
 
+    @objc func tapped(){
+        txtTitle.resignFirstResponder()
+        txtDays.resignFirstResponder()
+        txtDescp.resignFirstResponder()
+    }
     
     @IBAction func btnSave(_ sender: UIButton) {
+        
+        guard !txtTitle.text!.isEmpty && !txtDescp.text!.isEmpty && !txtDays.text!.isEmpty else {
+            okAlert(title: "Empty fields", message: "None of the field can be empty")
+            return
+        }
+        
+        
         let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Task")
         request.returnsObjectsAsFaults = false
         
@@ -61,7 +76,7 @@ class AddTaskVC: UIViewController {
                         alreadyExists = true
                         if segue == "cellSegue"{
                             r.setValue(txtTitle.text, forKey: "title")
-                            r.setValue(txtDescription.text, forKey: "descp")
+                            r.setValue(txtDescp.text, forKey: "descp")
                             r.setValue(Int(txtDays.text ?? "1"), forKey: "daysRequired")
                             
                             saveData()
@@ -71,24 +86,27 @@ class AddTaskVC: UIViewController {
                 
             }
             if !alreadyExists{
-//                print("Array count 1...\(tasks!.count)")
                 addNewTask()
-//                print("Array count 2...\(tasks!.count)")
-
-                
             }
-            else{
-                print("Task Already exists")
+            else if alreadyExists && segue != "cellSegue"{
+                okAlert(title: "Duplicate entry!", message: "Task named \(txtTitle.text!) already exists.")
             }
-//            loadData()
-
             print("after save...\(results.count)")
             
         }catch{
             print("Loading error....\(error)")
         }
+        
+        clearFields()
+        
+        self.navigationController?.popViewController(animated: true)
     }
     
+    func clearFields(){
+        txtTitle.text = ""
+        txtDays.text = ""
+        txtDescp.text = ""
+    }
 //    override func viewWillDisappear(_ animated: Bool) {
 //        delegateTaskTVC?.tasks = self.tasks
 //
@@ -97,7 +115,7 @@ class AddTaskVC: UIViewController {
     func addNewTask(){
         let newTask = NSEntityDescription.insertNewObject(forEntityName: "Task", into: context!)
         newTask.setValue(txtTitle.text, forKey: "title")
-        newTask.setValue(txtDescription.text, forKey: "descp")
+        newTask.setValue(txtDescp.text, forKey: "descp")
         newTask.setValue(Int(txtDays.text ?? "1"), forKey: "daysRequired")
         newTask.setValue(0, forKey: "daysCompleted")
         newTask.setValue(Date(), forKey: "date")
@@ -113,43 +131,18 @@ class AddTaskVC: UIViewController {
         }
     }
     
-//    func loadData(){
-//        tasks = []
-//        // create an instance of app delegate
-//        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-//        // second step is context
-//        let managedContext = appDelegate.persistentContainer.viewContext
-//
-//        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Task")
-//
-//        do {
-//            let results = try managedContext.fetch(fetchRequest)
-//            if results is [NSManagedObject] {
-//                for result in results as! [NSManagedObject] {
-//                    let title = result.value(forKey: "title") as! String
-//                    let description = result.value(forKey: "descp") as! String
-//                    let daysRequired = result.value(forKey: "daysRequired") as! Int
-//                    let daysCompleted = result.value(forKey: "daysCompleted") as! Int
-//                    let date = result.value(forKey: "date") as! Date
-//
-////                    let format = DateFormatter()
-////                    format.dateFormat = "yyyy-MM-dd HH:mm:ss"
-////                    let formattedDate = format.string(from: date)
-////
-////                    print("**********************")
-////                    print(formattedDate)
-//
-//                    tasks?.append(TaskModel(title: title, description: description, daysRequired: daysRequired, daysCompleted: daysCompleted, date: date))
-//                }
-//            }
-//        } catch {
-//            print(error)
-//        }
-//    }
-
-    /*
+    func okAlert(title: String, message: String){
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .cancel, handler: nil)
+        okAction.setValue( #colorLiteral(red: 0.6705882353, green: 0.3411764706, blue: 0.2470588235, alpha: 1), forKey: "titleTextColor")
+        
+        alertController.addAction(okAction)
+        present(alertController, animated: true, completion: nil)
+    }
+    
     // MARK: - Navigation
 
+    /*
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destination.
