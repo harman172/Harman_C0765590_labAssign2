@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 
 class TaskCell: UITableViewCell {
 
@@ -27,21 +28,25 @@ class TaskCell: UITableViewCell {
         // Configure the view for the selected state
     }
     
-    func setTask(task: TaskModel){
-        lblTitle.text = task.title
+    func setTask(task: NSManagedObject){
+        
+        lblTitle.text = task.value(forKey: "title") as! String
 
         let dateFormat = DateFormatter()
         dateFormat.dateFormat = "dd/MM/yyyy"
-        let formattedDate = dateFormat.string(from: task.date)
+        let formattedDate = dateFormat.string(from: task.value(forKey: "date") as! Date)
         lblDate.text = formattedDate
-        
+
         let timeFormat = DateFormatter()
         timeFormat.dateFormat = "HH:MM:SS"
-        let formattedTime = timeFormat.string(from: task.date)
+        let formattedTime = timeFormat.string(from: task.value(forKey: "date") as! Date)
         lblTime.text = formattedTime
+
+        let completedDays = task.value(forKey: "daysCompleted") as! Int
+        let requiredDays = task.value(forKey: "daysRequired") as! Int
         
-        if task.daysCompleted < task.daysRequired{
-            lblCompleteDays.text = "\(task.daysCompleted)/\(task.daysRequired) completed"
+        if completedDays < requiredDays{
+            lblCompleteDays.text = "\(completedDays)/\(requiredDays) completed"
         } else{
             lblCompleteDays.text = "Task completed"
         }

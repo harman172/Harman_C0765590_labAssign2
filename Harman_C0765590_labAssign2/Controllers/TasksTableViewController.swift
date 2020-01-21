@@ -11,13 +11,14 @@ import CoreData
 
 class TasksTableViewController: UITableViewController, UISearchResultsUpdating {
 
-    var tasks: [TaskModel]?
+//    var tasks: [TaskModel]?
+    
+    var tasksArray: [NSManagedObject]?
 
     @IBOutlet weak var lblSort: UIBarButtonItem!
     var managedContext: NSManagedObjectContext?
+    
     let searchController = UISearchController(searchResultsController: nil)
-    
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,8 +33,9 @@ class TasksTableViewController: UITableViewController, UISearchResultsUpdating {
         // second step is context
         managedContext = appDelegate.persistentContainer.viewContext
         
-        tasks = []
-        reloadData()
+        loadData()
+        print("count of array.....\(tasksArray?.count)")
+        
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
@@ -45,12 +47,10 @@ class TasksTableViewController: UITableViewController, UISearchResultsUpdating {
         if let searchText = searchController.searchBar.text{
             
             guard !searchText.isEmpty else {
+                loadData()
+                tableView.reloadData()
                 return
             }
-//            if searchText.isEmpty{
-//                reloadData()
-//            }else{
-            
             let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Task")
 
             fetchRequest.predicate = NSPredicate(format: "title contains[c] %@", searchText.lowercased())
@@ -60,16 +60,7 @@ class TasksTableViewController: UITableViewController, UISearchResultsUpdating {
                 let results = try managedContext!.fetch(fetchRequest)
 
                 if results is [NSManagedObject] {
-                    tasks = []
-                    for result in results as! [NSManagedObject] {
-                        let title = result.value(forKey: "title") as! String
-                        let description = result.value(forKey: "descp") as! String
-                        let daysRequired = result.value(forKey: "daysRequired") as! Int
-                        let daysCompleted = result.value(forKey: "daysCompleted") as! Int
-                        let date = result.value(forKey: "date") as! Date
-                        
-                        tasks?.append(TaskModel(title: title, description: description, daysRequired: daysRequired, daysCompleted: daysCompleted, date: date))
-                    }
+                    tasksArray = results as! [NSManagedObject]
                 }
             } catch {
                 print(error)
@@ -79,6 +70,7 @@ class TasksTableViewController: UITableViewController, UISearchResultsUpdating {
         tableView.reloadData()
     }
 
+    
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -88,31 +80,31 @@ class TasksTableViewController: UITableViewController, UISearchResultsUpdating {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return tasks?.count ?? 0
+        return tasksArray?.count ?? 0
     }
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "taskCell") as! TaskCell
-//            cell.textLabel?.text = tasks![indexPath.row].title
-        
-        
-        
-        cell.setTask(task: tasks![indexPath.row])
-        return cell
-//        }
 
         // Configure the cell...
 
-//        return UITableViewCell()
+        let cell = tableView.dequeueReusableCell(withIdentifier: "taskCell") as! TaskCell
+        cell.setTask(task: tasksArray![indexPath.row])
+        if (tasksArray![indexPath.row].value(forKey: "daysCompleted") as! Int) == (tasksArray![indexPath.row].value(forKey: "daysRequired") as! Int){
+            cell.accessoryType = .checkmark
+            cell.backgroundColor = .red
+        } else{
+            cell.accessoryType = .none
+            cell.backgroundColor = .none
+        }
+        return cell
+
     }
-    
-//    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        print(tasks![indexPath.row].title)
-//    }
+  
     
     
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        
         let DeleteAction = UIContextualAction(style: .destructive, title: "Delete", handler: { (action, view, success) in
             
             let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Task")
@@ -120,7 +112,8 @@ class TasksTableViewController: UITableViewController, UISearchResultsUpdating {
                 let results = try self.managedContext!.fetch(request)
                 if results.count > 0{
                     for result in results as! [NSManagedObject]{
-                        if self.tasks![indexPath.row].title == result.value(forKey: "title") as! String{
+                        
+                        if self.tasksArray![indexPath.row].value(forKey: "title") as! String == result.value(forKey: "title") as! String{
                             self.managedContext?.delete(result)
                             break
                         }
@@ -130,22 +123,16 @@ class TasksTableViewController: UITableViewController, UISearchResultsUpdating {
                     } catch{
                         print(error)
                     }
-                    
                 }
-//                self.reloadData()
-//                self.tableView.reloadData()
                 
             }catch{
                 print(error)
             }
-            
-            self.tasks!.remove(at: indexPath.row)
+            self.loadData()
             tableView.deleteRows(at: [indexPath], with: .fade)
 
-            print("Delete")
         })
         
-        /*
         let addDayAction = UIContextualAction(style: .normal, title: "Add Day", handler: {(action, view, success) in
             
             let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Task")
@@ -154,7 +141,7 @@ class TasksTableViewController: UITableViewController, UISearchResultsUpdating {
                 if results.count > 0{
                     for result in results as! [NSManagedObject]{
                         
-                        if self.tasks![indexPath.row].title == result.value(forKey: "title") as! String{
+                        if self.tasksArray![indexPath.row].value(forKey: "title") as! String == result.value(forKey: "title") as! String{
                             
                             if ((result.value(forKey: "daysCompleted") as! Int) < (result.value(forKey: "daysRequired") as! Int)){
                                 let days = result.value(forKey: "daysCompleted") as! Int
@@ -173,47 +160,20 @@ class TasksTableViewController: UITableViewController, UISearchResultsUpdating {
             }catch{
                 print(error)
             }
-//            self.okAlert(title: "One day added", message: "Success!")
-//            self.reloadData()
-            self.tasks![indexPath.row].daysCompleted += 1
-            self.tableView.reloadRows(at: [indexPath], with: .automatic)
+            if self.lblSort.image == UIImage(systemName: "calendar"){
+                self.sortByName()
+            } else{
+                self.loadData()
+            }
+            self.tableView.reloadData()
             
         })
         addDayAction.backgroundColor = .brown
-        */
         
-        return UISwipeActionsConfiguration(actions: [DeleteAction])
+        
+        return UISwipeActionsConfiguration(actions: [DeleteAction, addDayAction])
     }
     
-    func okAlert(title: String, message: String){
-        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "OK", style: .cancel) { (okSuccess) in
-            self.tableView.reloadData()
-        }
-        
-        alertController.addAction(okAction)
-        self.present(alertController, animated: true, completion: nil)
-    }
-    
-//    override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-//        let deleteAction = UIContextualAction(style: .destructive, title: "Delete", handler: {(action, view, success) in
-//
-//            let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Task")
-//            do{
-//                let results = try managedContext?.fetch(request)
-//
-//            }
-//        })
-//
-//
-//
-//        return UISwipeActionsConfiguration(actions: [deleteAction])
-//
-//    }
-    
-
-    
-
     /*
     // Override to support conditional editing of the table view.
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
@@ -264,7 +224,8 @@ class TasksTableViewController: UITableViewController, UISearchResultsUpdating {
             if let tableCell = sender as? TaskCell{
                 if let index = tableView.indexPath(for: tableCell)?.row{
 //                    destination.setData(task: tasks![index])
-                    destination.task = tasks![index]
+                    destination.task = tasksArray![index]
+                    
                 }
             }
         }
@@ -273,59 +234,22 @@ class TasksTableViewController: UITableViewController, UISearchResultsUpdating {
     
     override func viewWillAppear(_ animated: Bool) {
 //        reloadData()
+        loadData()
+        print("array count....\(tasksArray?.count)")
         tableView.reloadData()
         lblSort.image = UIImage(systemName: "a.square.fill")
 
     }
 
-    func loaddata(){
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        let context = appDelegate.persistentContainer.viewContext
-        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Task")
-        request.returnsObjectsAsFaults = false
-                
-        do{
-            let results = try context.fetch(request)
-            print("records TVC...\(results.count)")
-                
-    //            var alreadyExists = false
-    //            if results.count > 0{
-    //
-    //                for r in results as! [NSManagedObject]{
-    ////                    context!.delete(r)
-    ////                    saveData()
-    //                    let title = r.value(forKey: "title") as! String
-    //                    if title == txtTitle.text{
-    //                        alreadyExists = true
-    //                    }
-    //                }
-    //
-    //            }
-    //            if !alreadyExists{
-    //                addNewTask()
-    //            }
-    //            print("after save...\(results.count)")
-                
-        }catch{
-            print("Loading error....\(error)")
-        }
-            
-    }
-    func reloadData(){
+    func loadData(){
+        tasksArray = []
+        
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Task")
         
         do {
             let results = try managedContext!.fetch(fetchRequest)
             if results is [NSManagedObject] {
-                for result in results as! [NSManagedObject] {
-                    let title = result.value(forKey: "title") as! String
-                    let description = result.value(forKey: "descp") as! String
-                    let daysRequired = result.value(forKey: "daysRequired") as! Int
-                    let daysCompleted = result.value(forKey: "daysCompleted") as! Int
-                    let date = result.value(forKey: "date") as! Date
-                    
-                    tasks?.append(TaskModel(title: title, description: description, daysRequired: daysRequired, daysCompleted: daysCompleted, date: date))
-                }
+                tasksArray = results as! [NSManagedObject]
             }
         } catch {
             print(error)
@@ -334,30 +258,50 @@ class TasksTableViewController: UITableViewController, UISearchResultsUpdating {
     
     
     @IBAction func btnSorting(_ sender: UIBarButtonItem) {
-//        var title = sender.title!
-        
-//        sender.image = UIImage(systemName: "a.square.fill")
-        
-//        print(image?.value(forKey: "system"))
-        
+
         if sender.image == UIImage(systemName: "a.square.fill"){
-            tasks!.sort(by: { $0.title.lowercased() < $1.title.lowercased() })
+            sortByName()
             sender.image = UIImage(systemName: "calendar")
         }
         else if sender.image == UIImage(systemName: "calendar"){
-            tasks!.sort(by: { $0.date < $1.date })
+            sortByDateTime()
             sender.image = UIImage(systemName: "a.square.fill")
-
         }
-        
-//        if title == "By name"{
-//            tasks!.sort(by: { $0.title.lowercased() < $1.title.lowercased() })
-//            sender.title = "By date"
-//        } else if sender.title == "By date"{
-//            tasks!.sort(by: { $0.date < $1.date })
-//            sender.title = "By name"
-//        }
+
         tableView.reloadData()
+    }
+    
+    func sortByName(){
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Task")
+        do{
+            let sortDescriptor = NSSortDescriptor(key: "title", ascending: true)
+            let sorts = [sortDescriptor]
+            request.sortDescriptors = sorts
+            
+            let sortByName = try managedContext!.fetch(request) as! [NSManagedObject]
+            tasksArray = sortByName
+            print("counttt...\(sortByName.count)")
+            
+        }catch{
+            print(error)
+        }
+    }
+    
+    func sortByDateTime(){
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Task")
+
+        do{
+            let sortDescriptor = NSSortDescriptor(key: "date", ascending: true)
+            let sorts = [sortDescriptor]
+            request.sortDescriptors = sorts
+            
+            let sortByDate = try managedContext!.fetch(request) as! [NSManagedObject]
+            tasksArray = sortByDate
+            print("counttt...\(sortByDate.count)")
+            
+        }catch{
+            print(error)
+        }
     }
     
 }

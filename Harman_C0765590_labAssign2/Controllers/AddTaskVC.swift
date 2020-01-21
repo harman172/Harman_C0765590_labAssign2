@@ -11,15 +11,16 @@ import CoreData
 
 class AddTaskVC: UIViewController {
 
-    var tasks: [TaskModel]?
+//    var tasks: [TaskModel]?
     
     @IBOutlet weak var txtTitle: UITextField!
     @IBOutlet weak var txtDescription: UITextField!
     @IBOutlet weak var txtDays: UITextField!
     
     var context: NSManagedObjectContext?
+    
     weak var delegateTaskTVC: TasksTableViewController?
-    weak var task: TaskModel?
+    weak var task: NSManagedObject?
     var segue: String?
     
     override func viewDidLoad() {
@@ -28,15 +29,15 @@ class AddTaskVC: UIViewController {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         context = appDelegate.persistentContainer.viewContext
         
-//        if segue == "addNoteSegue"{
-            loadData()
+//            loadData()
             // Do any additional setup after loading the view.
-            
-//        }else
-    if segue == "cellSegue"{
-            txtTitle.text = task!.title
-            txtDescription.text = task!.description
-            txtDays.text = "\(task!.daysRequired)"
+
+        
+        
+        if segue == "cellSegue"{
+            txtTitle.text = task?.value(forKey: "title") as! String
+            txtDescription.text = task?.value(forKey: "descp") as! String
+            txtDays.text = "\(task?.value(forKey: "daysRequired") as! Int)"
         }
         
         
@@ -55,8 +56,6 @@ class AddTaskVC: UIViewController {
             if results.count > 0{
                 
                 for r in results as! [NSManagedObject]{
-//                    context!.delete(r)
-//                    saveData()
                     let title = r.value(forKey: "title") as! String
                     if title == txtTitle.text{
                         alreadyExists = true
@@ -72,16 +71,16 @@ class AddTaskVC: UIViewController {
                 
             }
             if !alreadyExists{
-                print("Array count 1...\(tasks!.count)")
+//                print("Array count 1...\(tasks!.count)")
                 addNewTask()
-                print("Array count 2...\(tasks!.count)")
+//                print("Array count 2...\(tasks!.count)")
 
                 
             }
             else{
                 print("Task Already exists")
             }
-            loadData()
+//            loadData()
 
             print("after save...\(results.count)")
             
@@ -90,10 +89,10 @@ class AddTaskVC: UIViewController {
         }
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        delegateTaskTVC?.tasks = self.tasks
-    
-    }
+//    override func viewWillDisappear(_ animated: Bool) {
+//        delegateTaskTVC?.tasks = self.tasks
+//
+//    }
     
     func addNewTask(){
         let newTask = NSEntityDescription.insertNewObject(forEntityName: "Task", into: context!)
@@ -114,39 +113,39 @@ class AddTaskVC: UIViewController {
         }
     }
     
-    func loadData(){
-        tasks = []
-        // create an instance of app delegate
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        // second step is context
-        let managedContext = appDelegate.persistentContainer.viewContext
-        
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Task")
-        
-        do {
-            let results = try managedContext.fetch(fetchRequest)
-            if results is [NSManagedObject] {
-                for result in results as! [NSManagedObject] {
-                    let title = result.value(forKey: "title") as! String
-                    let description = result.value(forKey: "descp") as! String
-                    let daysRequired = result.value(forKey: "daysRequired") as! Int
-                    let daysCompleted = result.value(forKey: "daysCompleted") as! Int
-                    let date = result.value(forKey: "date") as! Date
-                    
-//                    let format = DateFormatter()
-//                    format.dateFormat = "yyyy-MM-dd HH:mm:ss"
-//                    let formattedDate = format.string(from: date)
+//    func loadData(){
+//        tasks = []
+//        // create an instance of app delegate
+//        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+//        // second step is context
+//        let managedContext = appDelegate.persistentContainer.viewContext
 //
-//                    print("**********************")
-//                    print(formattedDate)
-                    
-                    tasks?.append(TaskModel(title: title, description: description, daysRequired: daysRequired, daysCompleted: daysCompleted, date: date))
-                }
-            }
-        } catch {
-            print(error)
-        }
-    }
+//        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Task")
+//
+//        do {
+//            let results = try managedContext.fetch(fetchRequest)
+//            if results is [NSManagedObject] {
+//                for result in results as! [NSManagedObject] {
+//                    let title = result.value(forKey: "title") as! String
+//                    let description = result.value(forKey: "descp") as! String
+//                    let daysRequired = result.value(forKey: "daysRequired") as! Int
+//                    let daysCompleted = result.value(forKey: "daysCompleted") as! Int
+//                    let date = result.value(forKey: "date") as! Date
+//
+////                    let format = DateFormatter()
+////                    format.dateFormat = "yyyy-MM-dd HH:mm:ss"
+////                    let formattedDate = format.string(from: date)
+////
+////                    print("**********************")
+////                    print(formattedDate)
+//
+//                    tasks?.append(TaskModel(title: title, description: description, daysRequired: daysRequired, daysCompleted: daysCompleted, date: date))
+//                }
+//            }
+//        } catch {
+//            print(error)
+//        }
+//    }
 
     /*
     // MARK: - Navigation
