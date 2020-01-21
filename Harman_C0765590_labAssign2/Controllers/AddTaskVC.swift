@@ -19,15 +19,29 @@ class AddTaskVC: UIViewController {
     
     var context: NSManagedObjectContext?
     weak var delegateTaskTVC: TasksTableViewController?
+    weak var task: TaskModel?
+    var segue: String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        loadData()
-        // Do any additional setup after loading the view.
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         context = appDelegate.persistentContainer.viewContext
+        
+//        if segue == "addNoteSegue"{
+            loadData()
+            // Do any additional setup after loading the view.
+            
+//        }else
+    if segue == "cellSegue"{
+            txtTitle.text = task!.title
+            txtDescription.text = task!.description
+            txtDays.text = "\(task!.daysRequired)"
+        }
+        
+        
     }
+
     
     @IBAction func btnSave(_ sender: UIButton) {
         let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Task")
@@ -46,6 +60,13 @@ class AddTaskVC: UIViewController {
                     let title = r.value(forKey: "title") as! String
                     if title == txtTitle.text{
                         alreadyExists = true
+                        if segue == "cellSegue"{
+                            r.setValue(txtTitle.text, forKey: "title")
+                            r.setValue(txtDescription.text, forKey: "descp")
+                            r.setValue(Int(txtDays.text ?? "1"), forKey: "daysRequired")
+                            
+                            saveData()
+                        }
                     }
                 }
                 
@@ -53,7 +74,6 @@ class AddTaskVC: UIViewController {
             if !alreadyExists{
                 print("Array count 1...\(tasks!.count)")
                 addNewTask()
-                loadData()
                 print("Array count 2...\(tasks!.count)")
 
                 
@@ -61,6 +81,8 @@ class AddTaskVC: UIViewController {
             else{
                 print("Task Already exists")
             }
+            loadData()
+
             print("after save...\(results.count)")
             
         }catch{
@@ -79,8 +101,10 @@ class AddTaskVC: UIViewController {
         newTask.setValue(txtDescription.text, forKey: "descp")
         newTask.setValue(Int(txtDays.text ?? "1"), forKey: "daysRequired")
         newTask.setValue(0, forKey: "daysCompleted")
+        newTask.setValue(Date(), forKey: "date")
         saveData()
     }
+    
     
     func saveData(){
         do{
@@ -104,11 +128,19 @@ class AddTaskVC: UIViewController {
             if results is [NSManagedObject] {
                 for result in results as! [NSManagedObject] {
                     let title = result.value(forKey: "title") as! String
-                    let description = result.value(forKey: "description") as! String
+                    let description = result.value(forKey: "descp") as! String
                     let daysRequired = result.value(forKey: "daysRequired") as! Int
                     let daysCompleted = result.value(forKey: "daysCompleted") as! Int
+                    let date = result.value(forKey: "date") as! Date
                     
-                    tasks?.append(TaskModel(title: title, description: description, daysRequired: daysRequired, daysCompleted: daysCompleted))
+//                    let format = DateFormatter()
+//                    format.dateFormat = "yyyy-MM-dd HH:mm:ss"
+//                    let formattedDate = format.string(from: date)
+//
+//                    print("**********************")
+//                    print(formattedDate)
+                    
+                    tasks?.append(TaskModel(title: title, description: description, daysRequired: daysRequired, daysCompleted: daysCompleted, date: date))
                 }
             }
         } catch {

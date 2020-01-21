@@ -12,9 +12,20 @@ import CoreData
 class TasksTableViewController: UITableViewController {
 
     var tasks: [TaskModel]?
+    @IBOutlet weak var lblSort: UIBarButtonItem!
+    var managedContext: NSManagedObjectContext?
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        lblSort.image = UIImage(systemName: "a.square.fill")
+        
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        // second step is context
+        managedContext = appDelegate.persistentContainer.viewContext
+        
+        
 
         tasks = []
         reloadData()
@@ -49,6 +60,65 @@ class TasksTableViewController: UITableViewController {
 
 //        return UITableViewCell()
     }
+    
+//    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+//        print(tasks![indexPath.row].title)
+//    }
+    
+    
+    override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let DeleteAction = UIContextualAction(style: .destructive, title: "Delete", handler: { (action, view, success) in
+            
+//            let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Task")
+//            do{
+//                let results = try self.managedContext!.fetch(request)
+//                if results.count > 0{
+//                    for result in results as! [NSManagedObject]{
+//                        if self.tasks![indexPath.row].title == result.value(forKey: "title") as! String{
+//                            self.managedContext?.delete(result)
+//                            break
+//                        }
+//                    }
+//                    
+//                    do{
+//                        try self.managedContext?.save()
+//                    } catch{
+//                        print(error)
+//                    }
+//                    
+//                }
+////                self.reloadData()
+////                self.tableView.reloadData()
+//                
+//            }catch{
+//                print(error)
+//            }
+            
+            tableView.deleteRows(at: [indexPath], with: .fade)
+
+            print("Delete")
+        })
+        
+        return UISwipeActionsConfiguration(actions: [DeleteAction])
+    }
+    
+//    override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+//        let deleteAction = UIContextualAction(style: .destructive, title: "Delete", handler: {(action, view, success) in
+//
+//            let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Task")
+//            do{
+//                let results = try managedContext?.fetch(request)
+//
+//            }
+//        })
+//
+//
+//
+//        return UISwipeActionsConfiguration(actions: [deleteAction])
+//
+//    }
+    
+
     
 
     /*
@@ -96,13 +166,23 @@ class TasksTableViewController: UITableViewController {
         
         if let destination = segue.destination as? AddTaskVC{
             destination.delegateTaskTVC = self
+            destination.segue = segue.identifier
+            
+            if let tableCell = sender as? TaskCell{
+                if let index = tableView.indexPath(for: tableCell)?.row{
+//                    destination.setData(task: tasks![index])
+                    destination.task = tasks![index]
+                }
+            }
         }
     }
     
     
     override func viewWillAppear(_ animated: Bool) {
-        loaddata()
+//        reloadData()
         tableView.reloadData()
+        lblSort.image = UIImage(systemName: "a.square.fill")
+
     }
 
     func loaddata(){
@@ -139,26 +219,52 @@ class TasksTableViewController: UITableViewController {
                 
         }
     func reloadData(){
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        // second step is context
-        let managedContext = appDelegate.persistentContainer.viewContext
-        
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Task")
         
         do {
-            let results = try managedContext.fetch(fetchRequest)
+            let results = try managedContext!.fetch(fetchRequest)
             if results is [NSManagedObject] {
                 for result in results as! [NSManagedObject] {
                     let title = result.value(forKey: "title") as! String
-                    let description = result.value(forKey: "description") as! String
+                    let description = result.value(forKey: "descp") as! String
                     let daysRequired = result.value(forKey: "daysRequired") as! Int
                     let daysCompleted = result.value(forKey: "daysCompleted") as! Int
+                    let date = result.value(forKey: "date") as! Date
                     
-                    tasks?.append(TaskModel(title: title, description: description, daysRequired: daysRequired, daysCompleted: daysCompleted))
+                    tasks?.append(TaskModel(title: title, description: description, daysRequired: daysRequired, daysCompleted: daysCompleted, date: date))
                 }
             }
         } catch {
             print(error)
         }
     }
+    
+    
+    @IBAction func btnSorting(_ sender: UIBarButtonItem) {
+//        var title = sender.title!
+        
+//        sender.image = UIImage(systemName: "a.square.fill")
+        
+//        print(image?.value(forKey: "system"))
+        
+        if sender.image == UIImage(systemName: "a.square.fill"){
+            tasks!.sort(by: { $0.title.lowercased() < $1.title.lowercased() })
+            sender.image = UIImage(systemName: "calendar")
+        }
+        else if sender.image == UIImage(systemName: "calendar"){
+            tasks!.sort(by: { $0.date < $1.date })
+            sender.image = UIImage(systemName: "a.square.fill")
+
+        }
+        
+//        if title == "By name"{
+//            tasks!.sort(by: { $0.title.lowercased() < $1.title.lowercased() })
+//            sender.title = "By date"
+//        } else if sender.title == "By date"{
+//            tasks!.sort(by: { $0.date < $1.date })
+//            sender.title = "By name"
+//        }
+        tableView.reloadData()
+    }
+    
 }

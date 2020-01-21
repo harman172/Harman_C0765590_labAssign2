@@ -9,17 +9,19 @@
 import Foundation
 
 class TaskModel{
-    internal init(title: String, description: String, daysRequired: Int, daysCompleted: Int) {
+    internal init(title: String, description: String, daysRequired: Int, daysCompleted: Int, date: Date) {
         self.title = title
         self.description = description
         self.daysRequired = daysRequired
         self.daysCompleted = daysCompleted
+        self.date = date
     }
     
     var title: String
     var description: String
     var daysRequired: Int
     var daysCompleted: Int
+    var date: Date
     
     
 }

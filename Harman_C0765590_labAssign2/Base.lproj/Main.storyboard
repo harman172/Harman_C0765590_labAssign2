@@ -11,50 +11,60 @@
         <scene sceneID="odk-Qv-KQx">
             <objects>
                 <tableViewController id="Ibx-KT-BLP" customClass="TasksTableViewController" customModule="Harman_C0765590_labAssign2" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="70" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="911-nn-JY7">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="75" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="911-nn-JY7">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="taskCell" id="xis-Ii-qn4" customClass="TaskCell" customModule="Harman_C0765590_labAssign2" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="28" width="375" height="70"/>
+                                <rect key="frame" x="0.0" y="28" width="375" height="75"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="xis-Ii-qn4" id="D56-Uq-1Y6">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="70"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="75"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OXH-Cj-Ac3">
-                                            <rect key="frame" x="26" y="16" width="36" height="23"/>
+                                            <rect key="frame" x="26" y="12" width="36" height="23"/>
                                             <fontDescription key="fontDescription" type="boldSystem" pointSize="19"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="days completed" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BfH-tc-Rqu">
-                                            <rect key="frame" x="25" y="43" width="103" height="17"/>
+                                            <rect key="frame" x="25" y="48" width="103" height="17"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                             <color key="textColor" red="0.62686389590000002" green="0.3598312649" blue="0.26828348759999998" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="total days" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9j9-rQ-zRa">
-                                            <rect key="frame" x="282" y="16" width="67" height="18"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="time and date" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9j9-rQ-zRa">
+                                            <rect key="frame" x="260.5" y="47" width="88.5" height="17"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eel-8h-DgS">
+                                            <rect key="frame" x="307" y="12" width="42" height="21"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
                                     <constraints>
                                         <constraint firstAttribute="trailingMargin" secondItem="9j9-rQ-zRa" secondAttribute="trailing" constant="10" id="1IQ-GP-rDG"/>
-                                        <constraint firstItem="OXH-Cj-Ac3" firstAttribute="top" secondItem="D56-Uq-1Y6" secondAttribute="topMargin" constant="5" id="C17-FP-WBc"/>
+                                        <constraint firstItem="OXH-Cj-Ac3" firstAttribute="top" secondItem="D56-Uq-1Y6" secondAttribute="topMargin" constant="1" id="C17-FP-WBc"/>
                                         <constraint firstAttribute="bottom" secondItem="BfH-tc-Rqu" secondAttribute="bottom" constant="10" id="CSr-zX-pI1"/>
                                         <constraint firstItem="BfH-tc-Rqu" firstAttribute="leading" secondItem="D56-Uq-1Y6" secondAttribute="leading" constant="25" id="F77-y8-UHv"/>
-                                        <constraint firstItem="9j9-rQ-zRa" firstAttribute="top" secondItem="D56-Uq-1Y6" secondAttribute="topMargin" constant="5" id="lnv-3O-7wd"/>
+                                        <constraint firstAttribute="bottomMargin" secondItem="9j9-rQ-zRa" secondAttribute="bottom" id="JS7-Ku-6sa"/>
+                                        <constraint firstAttribute="trailingMargin" secondItem="eel-8h-DgS" secondAttribute="trailing" constant="10" id="WBY-yT-CQK"/>
+                                        <constraint firstItem="eel-8h-DgS" firstAttribute="top" secondItem="D56-Uq-1Y6" secondAttribute="topMargin" constant="1" id="ksy-qW-7Qh"/>
                                         <constraint firstItem="OXH-Cj-Ac3" firstAttribute="leading" secondItem="D56-Uq-1Y6" secondAttribute="leadingMargin" constant="10" id="yCO-VM-b2z"/>
                                     </constraints>
                                 </tableViewCellContentView>
                                 <connections>
                                     <outlet property="lblCompleteDays" destination="BfH-tc-Rqu" id="8qX-Qa-Fph"/>
+                                    <outlet property="lblDate" destination="eel-8h-DgS" id="YhB-se-xQD"/>
+                                    <outlet property="lblTime" destination="9j9-rQ-zRa" id="Blf-yn-6KO"/>
                                     <outlet property="lblTitle" destination="OXH-Cj-Ac3" id="6Kx-5c-ASZ"/>
-                                    <outlet property="lblTotalDays" destination="9j9-rQ-zRa" id="K7s-4M-fiJ"/>
+                                    <segue destination="SlT-eM-gl0" kind="show" identifier="cellSegue" id="F6A-8z-PcY"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -68,12 +78,22 @@
                         <barButtonItem title="New Task" id="4yu-ow-oy1">
                             <color key="tintColor" red="0.62686389593908631" green="0.35983126494956563" blue="0.26828348762854687" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                             <connections>
-                                <segue destination="SlT-eM-gl0" kind="show" id="peG-AD-vFO"/>
+                                <segue destination="SlT-eM-gl0" kind="show" identifier="addNoteSegue" id="peG-AD-vFO"/>
                             </connections>
                         </barButtonItem>
                     </toolbarItems>
-                    <navigationItem key="navigationItem" title="Tasks" id="Lqm-rW-p9p"/>
+                    <navigationItem key="navigationItem" title="Tasks" id="Lqm-rW-p9p">
+                        <barButtonItem key="rightBarButtonItem" title="Item" image="a.square.fill" catalog="system" id="qtm-Xz-sOL">
+                            <color key="tintColor" red="0.62686389590000002" green="0.3598312649" blue="0.26828348759999998" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                            <connections>
+                                <action selector="btnSorting:" destination="Ibx-KT-BLP" id="hsg-ko-18n"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
+                    <connections>
+                        <outlet property="lblSort" destination="qtm-Xz-sOL" id="Abs-iP-1Kp"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Wpo-K9-GXj" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -172,4 +192,10 @@
             <point key="canvasLocation" x="-47" y="167"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="a.square.fill" catalog="system" width="64" height="56"/>
+    </resources>
+    <inferredMetricsTieBreakers>
+        <segue reference="F6A-8z-PcY"/>
+    </inferredMetricsTieBreakers>
 </document>
