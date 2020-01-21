@@ -59,6 +59,7 @@
                                         <constraint firstItem="OXH-Cj-Ac3" firstAttribute="leading" secondItem="D56-Uq-1Y6" secondAttribute="leadingMargin" constant="10" id="yCO-VM-b2z"/>
                                     </constraints>
                                 </tableViewCellContentView>
+                                <color key="backgroundColor" red="0.68886307390276802" green="0.81341967606907573" blue="0.60082574348827344" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <connections>
                                     <outlet property="lblCompleteDays" destination="BfH-tc-Rqu" id="8qX-Qa-Fph"/>
                                     <outlet property="lblDate" destination="eel-8h-DgS" id="YhB-se-xQD"/>
