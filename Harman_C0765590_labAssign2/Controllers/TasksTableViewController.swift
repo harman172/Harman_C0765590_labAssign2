@@ -9,24 +9,29 @@
 import UIKit
 import CoreData
 
-class TasksTableViewController: UITableViewController {
+class TasksTableViewController: UITableViewController, UISearchResultsUpdating {
 
     var tasks: [TaskModel]?
+
     @IBOutlet weak var lblSort: UIBarButtonItem!
     var managedContext: NSManagedObjectContext?
+    let searchController = UISearchController(searchResultsController: nil)
+    
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        searchController.searchResultsUpdater = self
+        self.navigationItem.searchController = searchController
+        searchController.dimsBackgroundDuringPresentation = false
+        
         lblSort.image = UIImage(systemName: "a.square.fill")
         
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         // second step is context
         managedContext = appDelegate.persistentContainer.viewContext
         
-        
-
         tasks = []
         reloadData()
         // Uncomment the following line to preserve selection between presentations
@@ -34,6 +39,44 @@ class TasksTableViewController: UITableViewController {
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
+    }
+    
+    func updateSearchResults(for searchController: UISearchController) {
+        if let searchText = searchController.searchBar.text{
+            
+            guard !searchText.isEmpty else {
+                return
+            }
+//            if searchText.isEmpty{
+//                reloadData()
+//            }else{
+            
+            let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Task")
+
+            fetchRequest.predicate = NSPredicate(format: "title contains[c] %@", searchText.lowercased())
+            
+            do {
+                
+                let results = try managedContext!.fetch(fetchRequest)
+
+                if results is [NSManagedObject] {
+                    tasks = []
+                    for result in results as! [NSManagedObject] {
+                        let title = result.value(forKey: "title") as! String
+                        let description = result.value(forKey: "descp") as! String
+                        let daysRequired = result.value(forKey: "daysRequired") as! Int
+                        let daysCompleted = result.value(forKey: "daysCompleted") as! Int
+                        let date = result.value(forKey: "date") as! Date
+                        
+                        tasks?.append(TaskModel(title: title, description: description, daysRequired: daysRequired, daysCompleted: daysCompleted, date: date))
+                    }
+                }
+            } catch {
+                print(error)
+            }
+//            }
+        }
+        tableView.reloadData()
     }
 
     // MARK: - Table view data source
@@ -52,8 +95,11 @@ class TasksTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "taskCell") as! TaskCell
 //            cell.textLabel?.text = tasks![indexPath.row].title
+        
+        
+        
         cell.setTask(task: tasks![indexPath.row])
-            return cell
+        return cell
 //        }
 
         // Configure the cell...
@@ -99,6 +145,7 @@ class TasksTableViewController: UITableViewController {
             print("Delete")
         })
         
+        /*
         let addDayAction = UIContextualAction(style: .normal, title: "Add Day", handler: {(action, view, success) in
             
             let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Task")
@@ -108,9 +155,13 @@ class TasksTableViewController: UITableViewController {
                     for result in results as! [NSManagedObject]{
                         
                         if self.tasks![indexPath.row].title == result.value(forKey: "title") as! String{
-                            let days = result.value(forKey: "daysCompleted") as! Int
-                            result.setValue((days + 1), forKey: "daysCompleted")
-                            break
+                            
+                            if ((result.value(forKey: "daysCompleted") as! Int) < (result.value(forKey: "daysRequired") as! Int)){
+                                let days = result.value(forKey: "daysCompleted") as! Int
+                                result.setValue((days + 1), forKey: "daysCompleted")
+                                break
+                            }
+    
                         }
                     }
                     do{
@@ -129,8 +180,9 @@ class TasksTableViewController: UITableViewController {
             
         })
         addDayAction.backgroundColor = .brown
+        */
         
-        return UISwipeActionsConfiguration(actions: [DeleteAction, addDayAction])
+        return UISwipeActionsConfiguration(actions: [DeleteAction])
     }
     
     func okAlert(title: String, message: String){

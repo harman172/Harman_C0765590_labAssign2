@@ -40,7 +40,11 @@ class TaskCell: UITableViewCell {
         let formattedTime = timeFormat.string(from: task.date)
         lblTime.text = formattedTime
         
-        lblCompleteDays.text = "Days left: \(task.daysRequired - task.daysCompleted)"
+        if task.daysCompleted < task.daysRequired{
+            lblCompleteDays.text = "\(task.daysCompleted)/\(task.daysRequired) completed"
+        } else{
+            lblCompleteDays.text = "Task completed"
+        }
     }
 
 }
